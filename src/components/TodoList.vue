@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <ElContainer class="list-container">
     <ElHeader>待办事项列表</ElHeader>
@@ -48,32 +50,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
-const inputValue = ref('')
-const todoList = ref([])
-const filter = ref('')
-const filterByTime = ref('')
+const inputValue = ref("");
+const todoList = ref([]);
+const filter = ref("");
+const filterByTime = ref("");
 
 const loadTodoListFromLocalStorage = () => {
-  const savedTodoList = localStorage.getItem('todoList')
+  const savedTodoList = localStorage.getItem("todoList");
   if (savedTodoList) {
-    return JSON.parse(savedTodoList)
+    return JSON.parse(savedTodoList);
   }
-  return []
-}
+  return [];
+};
 
 const saveTodoListToLocalStorage = (todoList) => {
-  localStorage.setItem('todoList', JSON.stringify(todoList))
-}
+  localStorage.setItem("todoList", JSON.stringify(todoList));
+};
 
 const filters = [
-  { value: '', label: '所有待办事项' },
-  { value: 'false', label: '未完成的待办事项' },
-  { value: 'true', label: '已完成的待办事项' },
-  { value: 'today', label: '今天添加的待办事项' },
-  { value: 'week', label: '本周添加的待办事项' },
-]
+  { value: "", label: "所有待办事项" },
+  { value: "false", label: "未完成的待办事项" },
+  { value: "true", label: "已完成的待办事项" },
+  { value: "today", label: "今天添加的待办事项" },
+  { value: "week", label: "本周添加的待办事项" },
+];
 
 const addTodo = () => {
   if (inputValue.value) {
@@ -82,80 +84,79 @@ const addTodo = () => {
       completed: false,
       readonly: true,
       addedAt: new Date().toISOString(),
-    }
-    todoList.value.push(newTodo)
-    inputValue.value = ''
-    saveTodoListToLocalStorage(todoList.value)
+    };
+    todoList.value.push(newTodo);
+    inputValue.value = "";
+    saveTodoListToLocalStorage(todoList.value);
   }
-}
+};
 
 const updateTodo = (todo) => {
-  const index = todoList.value.findIndex((t) => t === todo)
+  const index = todoList.value.findIndex((t) => t === todo);
   if (index !== -1) {
-    todoList.value[index] = { ...todo }
-    saveTodoListToLocalStorage(todoList.value)
+    todoList.value[index] = { ...todo };
+    saveTodoListToLocalStorage(todoList.value);
   }
-}
+};
 
 const deleteTodo = (todo) => {
-  const index = todoList.value.findIndex((t) => t === todo)
+  const index = todoList.value.findIndex((t) => t === todo);
   if (index !== -1) {
-    todoList.value.splice(index, 1)
-    saveTodoListToLocalStorage(todoList.value)
+    todoList.value.splice(index, 1);
+    saveTodoListToLocalStorage(todoList.value);
   }
-}
+};
 
 const editTodo = (todo) => {
-  todo.readonly = false
-}
+  todo.readonly = false;
+};
 
 const filterTodoList = (todoList) => {
-  if (filter.value === '') {
-    return todoList
+  if (filter.value === "") {
+    return todoList;
   }
 
-  if (filterByTime.value !== '') {
-    const now = new Date()
+  if (filterByTime.value !== "") {
+    const now = new Date();
     const startOfWeek = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate() - now.getDay() + 1
-    )
-    startOfWeek.setHours(0, 0, 0, 0)
+    );
+    startOfWeek.setHours(0, 0, 0, 0);
 
-    const filteredByTime = todoList.filter((todo) => {
-      const todoDate = new Date(todo.addedAt)
+    todoList.filter((todo) => {
+      const todoDate = new Date(todo.addedAt);
       switch (filterByTime.value) {
-        case 'today':
-          return todoDate.toDateString() === now.toDateString()
-        case 'week':
+        case "today":
+          return todoDate.toDateString() === now.toDateString();
+        case "week":
           return (
             todoDate >= startOfWeek &&
             todoDate < new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000)
-          )
+          );
         default:
-          return true
+          return true;
       }
-    })
-    return filteredByTime.filter(
-      (todo) => todo.completed === (filter.value === 'true')
-    )
+    });
   }
 
-  return todoList.filter((todo) => todo.completed === (filter.value === 'true'))
-}
+  return todoList.filter(
+    (todo) => todo.completed === (filter.value === "true")
+  );
+};
 
 const filteredTodoList = computed(() => {
-  return filterTodoList(todoList.value)
-})
+  return filterTodoList(todoList.value);
+});
 
 onMounted(() => {
-  todoList.value = loadTodoListFromLocalStorage()
-})
+  todoList.value = loadTodoListFromLocalStorage();
+});
 
 onUnmounted(() => {
-  localStorage.removeItem('todoList')
-})
+  localStorage.removeItem("todoList");
+});
 </script>
 <style lang="scss">
 .list-container {
